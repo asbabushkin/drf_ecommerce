@@ -1,13 +1,13 @@
 from autoslug import AutoSlugField
+from django.conf import settings
 from django.db import models
 
-from apps.accounts.models import User
 from apps.common.models import BaseModel
 
 
 class Seller(BaseModel):
     # Link to the User model
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="seller")
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="seller")
 
     # Business Information
     business_name = models.CharField(max_length=255)

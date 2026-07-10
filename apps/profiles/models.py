@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.db import models
 
-from apps.accounts.models import User
 from apps.common.models import BaseModel
 from apps.common.utils import generate_unique_code
 
@@ -41,7 +41,7 @@ class ShippingAddress(BaseModel):
     """
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="shipping_addresses"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shipping_addresses"
     )
     full_name = models.CharField(max_length=255)
     email = models.EmailField()
@@ -72,7 +72,7 @@ class Order(BaseModel):
             Overrides the save method to generate a unique transaction reference when a new order is created.
     """
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders")
     tx_ref = models.CharField(max_length=100, blank=True, unique=True)
     delivery_status = models.CharField(
         max_length=20, default="PENDING", choices=DELIVERY_STATUS_CHOICES

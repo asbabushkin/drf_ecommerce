@@ -1,13 +1,11 @@
 import uuid
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
-from django.contrib.auth import get_user_model
 
 from apps.common.managers import IsDeletedManager, GetOrNoneManager
 
-
-User = get_user_model()
 
 class BaseModel(models.Model):
     """
@@ -54,7 +52,7 @@ class Content(models.Model):
     slug = models.SlugField(max_length=255, blank=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.ForeignKey(User, on_delete=models.PROTECT, related_name="Контент", verbose_name="Автор")
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, verbose_name="Автор")
     metadata = models.JSONField(default=dict, blank=True, null=True)
     is_published = models.BooleanField(default=False)
 

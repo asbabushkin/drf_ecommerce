@@ -3,6 +3,7 @@ from django.db import models
 
 from apps.common.models import BaseModel
 from apps.common.utils import generate_unique_code
+from apps.shop.models import Product
 
 
 DELIVERY_STATUS_CHOICES = (
@@ -99,3 +100,37 @@ class Order(BaseModel):
         if not self.created_at:
             self.tx_ref = generate_unique_code(Order, "tx_ref")
         super().save(*args, **kwargs)
+
+
+class OrderItem(BaseModel):
+    """
+    Represents an item within an order.
+
+    Attributes:
+        order (ForeignKey): The order to which this item belongs.
+        product (ForeignKey): The product associated with this order item.
+        quantity (int): The quantity of the product ordered.
+
+
+    """
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
+    order = models.ForeignKey(
+        Order,
+        related_name="orderitems",
+        null=True,
+        on_delete=models.CASCADE,
+        blank=True,
+    )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    @property
+    def get_total(self):
+        return self.product.price_current * self.quantity
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.product.name
